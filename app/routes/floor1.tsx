@@ -1,3 +1,4 @@
+import { ConnectWallet } from "@thirdweb-dev/react";
 import background from "../images/level1.png";
 
 export default function Floor1() {
@@ -12,12 +13,7 @@ export default function Floor1() {
       />
 
       <div className="absolute top-0 right-0 p-4" style={{ zIndex: 30 }}>
-        <button
-          type="button"
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors duration-300"
-        >
-          Login
-        </button>
+        <ConnectWallet theme={"dark"} modalSize={"wide"} />
       </div>
       <div
         className="absolute left-0 top-0 h-full flex flex-col justify-between p-4"
