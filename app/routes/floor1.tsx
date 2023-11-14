@@ -1,5 +1,6 @@
 import { ConnectWallet } from "@thirdweb-dev/react";
 import background from "../images/level1.png";
+import gacha from "../images/gacha1.png";
 
 export default function Floor1() {
   return (
@@ -101,18 +102,16 @@ export default function Floor1() {
         </div>
       </div>
       {/* Content goes here, absolutely positioned, with a higher z-index */}
-      <div className="absolute top-0 w-full h-full" style={{ zIndex: 20 }}>
-        {/* Your content here */}
+      <div
+        className="absolute top-0 w-full h-full flex m-auto"
+        style={{ zIndex: 20 }}
+      >
+        <div className="m-auto">
+          <button type="button">
+            <img src={gacha} alt="gacha machine 1" className="w-1/2" />
+          </button>
+        </div>
       </div>
     </div>
   );
-
-  // return (
-  //   <div
-  //     className="container mx-auto bg-cover flex-row h-1000"
-  //     style={{ backgroundImage: `url(${background})` }}
-  //   >
-  //     <p>aaa</p>
-  //   </div>
-  // );
 }
