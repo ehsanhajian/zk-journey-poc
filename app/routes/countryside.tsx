@@ -5,9 +5,20 @@ import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../com
 
 export default function Countryside() {
   const [visibleDiv, setVisibleDiv] = useState<number | null>(null);
-  const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0); // Renamed state variable
+  const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const updateScrollProgress = () => {
+    const scrollContainerDiv = scrollContainerRef.current;
+    if (scrollContainerDiv) {
+      const maxScrollLeft = scrollContainerDiv.scrollWidth - scrollContainerDiv.clientWidth;
+      const progress = (scrollContainerDiv.scrollLeft / maxScrollLeft) * 100;
+      setScrollProgress(progress);
+    }
+  };
 
   const handleWheel = (event: WheelEvent) => {
     const scrollContainerDiv = scrollContainerRef.current;
@@ -26,6 +37,7 @@ export default function Countryside() {
 
       backgroundDiv.style.backgroundPositionX = `-${backgroundScroll}px`;
       setLastBackgroundPosition(backgroundScroll);
+      updateScrollProgress();
     }
   };
 
@@ -68,6 +80,7 @@ export default function Countryside() {
           window.requestAnimationFrame(step);
         } else {
           setLastBackgroundPosition(backgroundNewPosition);
+          updateScrollProgress();
         }
       };
       window.requestAnimationFrame(step);
@@ -82,6 +95,7 @@ export default function Countryside() {
     const scrollContainerDiv = scrollContainerRef.current;
 
     if (scrollContainerDiv) {
+      updateScrollProgress();
       scrollContainerDiv.addEventListener("wheel", handleWheel, { passive: false });
     }
 
@@ -90,7 +104,7 @@ export default function Countryside() {
         scrollContainerDiv.removeEventListener("wheel", handleWheel);
       }
     };
-  }, [handleWheel]);
+  }, [handleWheel, updateScrollProgress]);
 
   return (
     <div className="relative h-[750px] overflow-hidden">
@@ -143,35 +157,47 @@ export default function Countryside() {
                 />
                 <div
                   id={`image_details_${index}`}
-                  className="transition-all overflow-hidden bg-gray-200"
+                  className="transition-all overflow-hidden bg-gray-200 rounded-lg"
                   style={{
-                    width: visibleDiv === index ? "400px" : "0",
+                    width: visibleDiv === index ? "500px" : "0",
+                    opacity: 0.7,
                     transition: "width 0.3s ease",
                   }}
                 >
                   {/* Content of the hidden div */}
-                  <p className="p-4">Details for Image {index + 1}</p>
+                  <p className="p-4">Details for Gacha {index + 1}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </div>
-      {/* Left and Right Scroll Buttons */}
-      <button
-        className="absolute bottom-10 left-10 z-20 p-2 bg-blue-500 text-white"
-        onClick={() => handleButtonScroll("left")}
-        type="button"
-      >
-        Left
-      </button>
-      <button
-        className="absolute bottom-10 right-10 z-20 p-2 bg-blue-500 text-white"
-        onClick={() => handleButtonScroll("right")}
-        type="button"
-      >
-        Right
-      </button>
+
+      {/* Scroll Indicator Container */}
+      <div className="absolute bottom-10 left-1/3 right-1/3 z-20 flex justify-between items-center">
+        {/* Left Button */}
+        <button
+          className="flex justify-center items-center p-2 bg-blue-500 text-white rounded-full h-10 w-10"
+          onClick={() => handleButtonScroll("left")}
+          type="button"
+        >
+          <span className="font-bold text-xl">&lt;</span>
+        </button>
+
+        {/* Scroll Indicator */}
+        <div className="bg-gray-300 flex-grow mx-2 h-4 rounded-full">
+          <div className="bg-blue-500 h-4 rounded-full" style={{ width: `${scrollProgress}%` }} />
+        </div>
+
+        {/* Right Button */}
+        <button
+          className="flex justify-center items-center p-2 bg-blue-500 text-white rounded-full h-10 w-10"
+          onClick={() => handleButtonScroll("right")}
+          type="button"
+        >
+          <span className="font-bold text-xl">&gt;</span>
+        </button>
+      </div>
     </div>
   );
 }
