@@ -6,16 +6,22 @@ import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../com
 export default function Floor2() {
   const [visibleDiv, setVisibleDiv] = useState<number | null>(null);
 
-  const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = () => {
-    const contentDiv = scrollContainerRef.current;
+  const handleWheel = (event) => {
+    const scrollContainerDiv = scrollContainerRef.current;
     const backgroundDiv = document.getElementById("background");
 
-    if (contentDiv && backgroundDiv) {
-      const parallaxRatio = 0.4;
-      const backgroundScroll = contentDiv.scrollLeft * parallaxRatio;
+    if (scrollContainerDiv && backgroundDiv) {
+      event.preventDefault();
+
+      // Convert vertical scroll to horizontal
+      const { deltaX, deltaY } = event;
+      scrollContainerDiv.scrollLeft += deltaY + deltaX;
+
+      // Parallax effect
+      const parallaxRatio = 0.1;
+      const backgroundScroll = scrollContainerDiv.scrollLeft * parallaxRatio;
 
       backgroundDiv.style.backgroundPositionX = `-${backgroundScroll}px`;
     }
@@ -25,15 +31,15 @@ export default function Floor2() {
     const scrollContainerDiv = scrollContainerRef.current;
 
     if (scrollContainerDiv) {
-      scrollContainerDiv.addEventListener("scroll", handleScroll);
+      scrollContainerDiv.addEventListener("wheel", handleWheel, { passive: false });
     }
 
     return () => {
       if (scrollContainerDiv) {
-        scrollContainerDiv.removeEventListener("scroll", handleScroll);
+        scrollContainerDiv.removeEventListener("wheel", handleWheel);
       }
     };
-  }, [handleScroll]);
+  }, [handleWheel]);
 
   const handleImageClick = (index: number) => {
     setVisibleDiv(visibleDiv === index ? null : index);
@@ -52,10 +58,7 @@ export default function Floor2() {
         }}
       />
 
-      <div
-        className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0"
-        ref={contentRef}
-      >
+      <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0">
         {/* Top Button */}
         <button
           type="button"
