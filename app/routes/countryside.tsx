@@ -20,6 +20,14 @@ export default function Countryside() {
     }
   };
 
+  const handleKeyUp = (event: KeyboardEvent) => {
+    if (event.key === "ArrowRight") {
+      handleButtonScroll("right");
+    } else if (event.key === "ArrowLeft") {
+      handleButtonScroll("left");
+    }
+  };
+
   const handleWheel = (event: WheelEvent) => {
     const scrollContainerDiv = scrollContainerRef.current;
     const backgroundDiv = document.getElementById("background");
@@ -97,14 +105,16 @@ export default function Countryside() {
     if (scrollContainerDiv) {
       updateScrollProgress();
       scrollContainerDiv.addEventListener("wheel", handleWheel, { passive: false });
+      window.addEventListener("keyup", handleKeyUp);
     }
 
     return () => {
       if (scrollContainerDiv) {
         scrollContainerDiv.removeEventListener("wheel", handleWheel);
       }
+      window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [handleWheel, updateScrollProgress]);
+  }, [handleWheel, handleKeyUp, updateScrollProgress]);
 
   return (
     <div className="relative h-[750px] overflow-hidden">
@@ -177,7 +187,7 @@ export default function Countryside() {
       <div className="absolute bottom-10 left-1/3 right-1/3 z-20 flex justify-between items-center">
         {/* Left Button */}
         <button
-          className="flex justify-center items-center p-2 bg-blue-500 text-white rounded-full h-10 w-10"
+          className="flex justify-center items-center p-2 bg-blue-500 text-white rounded-full h-10 w-10 hover:bg-blue-300 transition-colors duration-300 focus:border-none"
           onClick={() => handleButtonScroll("left")}
           type="button"
         >
@@ -191,7 +201,7 @@ export default function Countryside() {
 
         {/* Right Button */}
         <button
-          className="flex justify-center items-center p-2 bg-blue-500 text-white rounded-full h-10 w-10"
+          className="flex justify-center items-center p-2 bg-blue-500 text-white rounded-full h-10 w-10 hover:bg-blue-300 transition-colors duration-300 focus:border-none"
           onClick={() => handleButtonScroll("right")}
           type="button"
         >

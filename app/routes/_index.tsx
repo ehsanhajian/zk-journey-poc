@@ -13,7 +13,7 @@ export default function Index() {
     <div className="flex-col space-y-12 container mx-auto p-6">
       <img src={banner} alt="" className="mx-auto" />
       <div>
-        <Link to="/floor1">
+        <Link to="/countryside">
           <img src={details} alt="" className="mx-auto" />
         </Link>
       </div>
