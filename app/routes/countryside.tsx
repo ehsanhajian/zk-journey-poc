@@ -1,14 +1,15 @@
-// React Component
 import React, { useEffect, useRef, useState } from "react";
 import background from "../images/level1.png";
 import gacha from "../images/gacha1.png";
 import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../components/Icons";
-export default function Floor2() {
+
+export default function Countryside() {
   const [visibleDiv, setVisibleDiv] = useState<number | null>(null);
-
+  const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0); // Renamed state variable
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const backgroundRef = useRef<HTMLDivElement>(null);
 
-  const handleWheel = (event) => {
+  const handleWheel = (event: WheelEvent) => {
     const scrollContainerDiv = scrollContainerRef.current;
     const backgroundDiv = document.getElementById("background");
 
@@ -24,7 +25,57 @@ export default function Floor2() {
       const backgroundScroll = scrollContainerDiv.scrollLeft * parallaxRatio;
 
       backgroundDiv.style.backgroundPositionX = `-${backgroundScroll}px`;
+      setLastBackgroundPosition(backgroundScroll);
     }
+  };
+
+  const handleButtonScroll = (direction: "left" | "right") => {
+    const scrollContainerDiv = scrollContainerRef.current;
+    const backgroundDiv = backgroundRef.current;
+
+    if (scrollContainerDiv && backgroundDiv) {
+      const contentCurrent = scrollContainerDiv.scrollLeft;
+      const contentScrollAmount = scrollContainerDiv.clientWidth * 0.6;
+      const contentNewScrollLeft =
+        direction === "right"
+          ? Math.min(
+              contentCurrent + contentScrollAmount,
+              scrollContainerDiv.scrollWidth - scrollContainerDiv.clientWidth,
+            )
+          : Math.max(contentCurrent - contentScrollAmount, 0);
+
+      if (direction === "right" && contentCurrent === contentNewScrollLeft) {
+        return;
+      }
+
+      const backgroundScrollAmount =
+        scrollContainerDiv.clientWidth * 0.05 * (direction === "right" ? 1 : -1);
+      const backgroundNewPosition = Math.max(lastBackgroundPosition + backgroundScrollAmount, 0);
+
+      let startTimestamp: number | null = null;
+      const duration = 300;
+      const step = (timestamp: number) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const contentPosition = contentCurrent + progress * (contentNewScrollLeft - contentCurrent);
+        const backgroundPosition =
+          lastBackgroundPosition + progress * (backgroundNewPosition - lastBackgroundPosition);
+
+        scrollContainerDiv.scrollLeft = contentPosition;
+        backgroundDiv.style.backgroundPositionX = `-${backgroundPosition}px`;
+
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          setLastBackgroundPosition(backgroundNewPosition);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+  };
+
+  const handleImageClick = (index: number) => {
+    setVisibleDiv(visibleDiv === index ? null : index);
   };
 
   useEffect(() => {
@@ -41,14 +92,12 @@ export default function Floor2() {
     };
   }, [handleWheel]);
 
-  const handleImageClick = (index: number) => {
-    setVisibleDiv(visibleDiv === index ? null : index);
-  };
   return (
     <div className="relative h-[750px] overflow-hidden">
       {/* Parallax Background */}
       <div
         id="background"
+        ref={backgroundRef}
         className="absolute top-0 left-0 w-full h-[800px] z--10"
         style={{
           backgroundImage: `url(${background})`,
@@ -108,7 +157,21 @@ export default function Floor2() {
           </div>
         </div>
       </div>
-      ,
+      {/* Left and Right Scroll Buttons */}
+      <button
+        className="absolute bottom-10 left-10 z-20 p-2 bg-blue-500 text-white"
+        onClick={() => handleButtonScroll("left")}
+        type="button"
+      >
+        Left
+      </button>
+      <button
+        className="absolute bottom-10 right-10 z-20 p-2 bg-blue-500 text-white"
+        onClick={() => handleButtonScroll("right")}
+        type="button"
+      >
+        Right
+      </button>
     </div>
   );
 }
