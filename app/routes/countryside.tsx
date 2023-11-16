@@ -1,34 +1,61 @@
 // React Component
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import background from "../images/level1.png";
 import gacha from "../images/gacha1.png";
-import {
-  BridgeIcon,
-  CardIcon,
-  FolderIcon,
-  PoolIcon,
-  LanguageIcon,
-} from "../components/Icons";
+import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../components/Icons";
 export default function Floor2() {
   const [visibleDiv, setVisibleDiv] = useState<number | null>(null);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    const contentDiv = scrollContainerRef.current;
+    const backgroundDiv = document.getElementById("background");
+
+    if (contentDiv && backgroundDiv) {
+      const parallaxRatio = 0.4;
+      const backgroundScroll = contentDiv.scrollLeft * parallaxRatio;
+
+      backgroundDiv.style.backgroundPositionX = `-${backgroundScroll}px`;
+    }
+  };
+
+  useEffect(() => {
+    const scrollContainerDiv = scrollContainerRef.current;
+
+    if (scrollContainerDiv) {
+      scrollContainerDiv.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (scrollContainerDiv) {
+        scrollContainerDiv.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [handleScroll]);
 
   const handleImageClick = (index: number) => {
     setVisibleDiv(visibleDiv === index ? null : index);
   };
   return (
-    <div className="relative h-[800px] overflow-hidden">
+    <div className="relative h-[750px] overflow-hidden">
       {/* Parallax Background */}
       <div
-        className="absolute top-0 left-0 w-full h-full z--10"
+        id="background"
+        className="absolute top-0 left-0 w-full h-[800px] z--10"
         style={{
           backgroundImage: `url(${background})`,
-          backgroundAttachment: "fixed",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
+          backgroundSize: "auto 100%",
+          backgroundRepeat: "repeat-x",
+          backgroundPositionX: "0",
         }}
       />
 
-      <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0">
+      <div
+        className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0"
+        ref={contentRef}
+      >
         {/* Top Button */}
         <button
           type="button"
@@ -50,7 +77,10 @@ export default function Floor2() {
 
         {/* Content Area */}
         <div className="row-start-2 col-start-1 overflow-auto col-span-2">
-          <div className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[30%] z-10">
+          <div
+            className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[30%] z-10"
+            ref={scrollContainerRef}
+          >
             {[...Array(10).keys()].map((index) => (
               <div className="flex-none flex mr-[20%]" key={index}>
                 <img
