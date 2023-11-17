@@ -54,7 +54,7 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Gacha Party</title>
+        <title>Yomi Origins</title>
         <Meta />
         <Links />
       </head>
@@ -62,12 +62,7 @@ export default function App() {
         <ThirdwebProvider
           activeChain={zKatana}
           clientId={twApiKey}
-          supportedWallets={[
-            metamaskWallet(),
-            walletConnect(),
-            localWallet(),
-            embeddedWallet(),
-          ]}
+          supportedWallets={[metamaskWallet(), walletConnect(), localWallet(), embeddedWallet()]}
         >
           <Outlet />
         </ThirdwebProvider>
