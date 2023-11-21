@@ -12,11 +12,11 @@ import {
 
 import {
   ThirdwebProvider,
-  ConnectWallet,
   metamaskWallet,
   walletConnect,
   localWallet,
   embeddedWallet,
+  rainbowWallet,
 } from "@thirdweb-dev/react";
 
 import styles from "./tailwind.css";
@@ -62,7 +62,16 @@ export default function App() {
         <ThirdwebProvider
           activeChain={zKatana}
           clientId={twApiKey}
-          supportedWallets={[metamaskWallet(), walletConnect(), localWallet(), embeddedWallet()]}
+          supportedWallets={[
+            metamaskWallet(),
+            walletConnect(),
+            embeddedWallet({
+              auth: {
+                options: ["apple", "facebook", "email", "google"],
+              },
+            }),
+            rainbowWallet(),
+          ]}
         >
           <Outlet />
         </ThirdwebProvider>

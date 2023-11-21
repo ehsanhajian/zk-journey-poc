@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import background from "../images/level1.png";
 import gacha from "../images/gacha1.png";
 import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../components/Icons";
+import { ConnectWallet } from "@thirdweb-dev/react";
 
 export default function Countryside() {
   const [visibleDiv, setVisibleDiv] = useState<number | null>(null);
@@ -133,12 +134,9 @@ export default function Countryside() {
 
       <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0">
         {/* Top Button */}
-        <button
-          type="button"
-          className="row-start-1 col-start-2 justify-self-end m-4 p-2 bg-blue-500 text-white"
-        >
-          Top Button
-        </button>
+        <div className="row-start-1 col-start-2 justify-self-end p-4">
+          <ConnectWallet theme={"light"} modalSize={"wide"} />
+        </div>
 
         {/* Left Column with Icons */}
         <div className="flex flex-col justify-start space-y-5 items-center row-start-2 col-start-1 p-4 bg-opacity-50 z-50">
@@ -157,7 +155,7 @@ export default function Countryside() {
             className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[30%] z-10"
             ref={scrollContainerRef}
           >
-            {[...Array(10).keys()].map((index) => (
+            {[...Array(5).keys()].map((index) => (
               <div className="flex-none flex mr-[20%]" key={index}>
                 <img
                   src={gacha}
@@ -174,7 +172,7 @@ export default function Countryside() {
                     transition: "width 0.3s ease",
                   }}
                 >
-                  {/* Content of the hidden div */}
+                  {/* BANDIT WIDGET HERE */}
                   <p className="p-4">Details for Gacha {index + 1}</p>
                 </div>
               </div>
