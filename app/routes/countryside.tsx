@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import background from "../images/level1.png";
 import gacha from "../images/gacha1.png";
 import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../components/Icons";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import {QuestWidget} from "@bandit-network/quest-widget"
+import {useConnectModal} from "@rainbow-me/rainbowkit";
+import BanditQuest from "~/components/BanditQuest";
+import {useLoaderData} from "@remix-run/react";
+import {LoaderFunction} from "@remix-run/node";
+
 
 export default function Countryside() {
   const [visibleDiv, setVisibleDiv] = useState<number | null>(null);
@@ -135,7 +141,7 @@ export default function Countryside() {
       <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0">
         {/* Top Button */}
         <div className="row-start-1 col-start-2 justify-self-end p-4">
-          <ConnectWallet theme={"light"} modalSize={"wide"} />
+          <ConnectButton />
         </div>
 
         {/* Left Column with Icons */}
@@ -156,24 +162,25 @@ export default function Countryside() {
             ref={scrollContainerRef}
           >
             {[...Array(5).keys()].map((index) => (
-              <div className="flex-none flex mr-[20%]" key={index}>
+              <div className="flex-none items-center flex mr-[20%]" key={index}>
                 <img
                   src={gacha}
                   alt={`Gacha machine ${index}`}
                   className="w-64 h-auto cursor-pointer"
-                  onClick={() => handleImageClick(index)}
+                  onClick={() => handleImageClick(3444)}
                 />
                 <div
                   id={`image_details_${index}`}
                   className="transition-all overflow-hidden bg-gray-200 rounded-lg"
                   style={{
-                    width: visibleDiv === index ? "500px" : "0",
-                    opacity: 0.7,
+                    width: visibleDiv ? "500px" : "0",
                     transition: "width 0.3s ease",
                   }}
                 >
                   {/* BANDIT WIDGET HERE */}
-                  <p className="p-4">Details for Gacha {index + 1}</p>
+                  {
+                      visibleDiv && <BanditQuest isOpen={!!visibleDiv} collectionId={visibleDiv} onClose={() => setVisibleDiv(null)}/>
+                  }
                 </div>
               </div>
             ))}
