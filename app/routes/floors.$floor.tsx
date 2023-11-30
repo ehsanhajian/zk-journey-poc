@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import background from "../images/level1.png";
+import background from "../images/countryside_resized_optimised_large.png";
 import gacha from "../images/gacha1.png";
 import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../components/Icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -124,12 +124,12 @@ export default function Countryside() {
   }, [handleWheel, handleKeyUp, updateScrollProgress]);
 
   return (
-    <div className="relative h-[750px] overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Parallax Background */}
       <div
         id="background"
         ref={backgroundRef}
-        className="absolute top-0 left-0 w-full h-[800px] z--10"
+        className="absolute top-0 left-0 w-full min-h-screen z--10"
         style={{
           backgroundImage: `url(${background})`,
           backgroundSize: "auto 100%",
@@ -138,7 +138,7 @@ export default function Countryside() {
         }}
       />
 
-      <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0">
+      <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] min-h-screen relative z-0">
         {/* Top Button */}
         <div className="row-start-1 col-start-2 justify-self-end p-4">
           <ConnectButton />
