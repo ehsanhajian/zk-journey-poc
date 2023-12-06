@@ -28,7 +28,6 @@ type floorData = {
 export const loader: LoaderFunction = async ({ params }) => {
   const endpoint = process.env.STRAPI_BASE_URL;
   if (!endpoint) throw new Error("No API endpoint provided in the ENV!");
-  console.log(params);
   const apiUrl = `${endpoint}/api/floors/${params.floor}`;
   const rawResponse = await fetch(apiUrl);
   const response = (await rawResponse.json()) as floorData;
@@ -190,7 +189,7 @@ export default function Floor() {
             ref={scrollContainerRef}
           >
             {apiData.gachaMachines.map((machine: GachaMachine) => (
-              <div className="flex-none flex mr-[20%]" key={machine.id}>
+              <div className="flex mr-[20%] items-center" key={machine.id}>
                 <img
                   src={`${apiBase}${machine.image.url}`}
                   alt={`Gacha machine ${machine.machineName}`}
@@ -199,7 +198,7 @@ export default function Floor() {
                 />
                 <div
                   id={`image_details_${machine.id}`}
-                  className="transition-all overflow-hidden bg-gray-200 rounded-lg"
+                  className="transition-all overflow-hidden bg-gray-200 rounded-lg self-stretch"
                   style={{
                     width: visibleDiv === machine.id ? "500px" : "0",
                     opacity: 0.7,
@@ -207,7 +206,9 @@ export default function Floor() {
                   }}
                 >
                   {/* BANDIT WIDGET HERE */}
-                  <p className="p-4">Details for Gacha machine: {machine.machineName}</p>
+                  <p className="p-4 whitespace-nowrap">Machine name: {machine.machineName}</p>
+                  <p className="p-4 whitespace-nowrap">Partner name: {machine.partnerName}</p>
+                  <p className="p-4">Partner description: {machine.partnerDescription}</p>
                 </div>
               </div>
             ))}
