@@ -1,9 +1,29 @@
 import { useEffect, useRef, useState } from "react";
-import gacha from "../images/gacha1.png";
 import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../components/Icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction, json } from "@remix-run/node";
+
+type ImageData = {
+  url: string;
+  name: string;
+};
+
+type GachaMachine = {
+  id: number;
+  machineName: string;
+  partnerName: string;
+  partnerDescription: string;
+  image: ImageData;
+};
+
+type floorData = {
+  id: number;
+  floorName: string;
+  floorDescription: string;
+  backgroundImage: ImageData;
+  gachaMachines: GachaMachine[];
+};
 
 export const loader: LoaderFunction = async ({ params }) => {
   const endpoint = process.env.STRAPI_BASE_URL;
@@ -11,7 +31,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   console.log(params);
   const apiUrl = `${endpoint}/api/floors/${params.floor}`;
   const rawResponse = await fetch(apiUrl);
-  const response = await rawResponse.json();
+  const response = (await rawResponse.json()) as floorData;
   return json({ apiBase: endpoint, apiData: response });
 };
 
@@ -169,25 +189,25 @@ export default function Floor() {
             className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[30%] z-10"
             ref={scrollContainerRef}
           >
-            {[...Array(5).keys()].map((index) => (
-              <div className="flex-none flex mr-[20%]" key={index}>
+            {apiData.gachaMachines.map((machine: GachaMachine) => (
+              <div className="flex-none flex mr-[20%]" key={machine.id}>
                 <img
-                  src={gacha}
-                  alt={`Gacha machine ${index}`}
+                  src={`${apiBase}${machine.image.url}`}
+                  alt={`Gacha machine ${machine.machineName}`}
                   className="w-64 h-auto cursor-pointer"
-                  onClick={() => handleImageClick(index)}
+                  onClick={() => handleImageClick(machine.id)}
                 />
                 <div
-                  id={`image_details_${index}`}
+                  id={`image_details_${machine.id}`}
                   className="transition-all overflow-hidden bg-gray-200 rounded-lg"
                   style={{
-                    width: visibleDiv === index ? "500px" : "0",
+                    width: visibleDiv === machine.id ? "500px" : "0",
                     opacity: 0.7,
                     transition: "width 0.3s ease",
                   }}
                 >
                   {/* BANDIT WIDGET HERE */}
-                  <p className="p-4">Details for Gacha {index + 1}</p>
+                  <p className="p-4">Details for Gacha machine: {machine.machineName}</p>
                 </div>
               </div>
             ))}

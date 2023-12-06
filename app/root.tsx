@@ -25,7 +25,6 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader() {
-  // console.group(process.env.TW_API_KEY);
   return json({ twApiKey: process.env.TW_API_KEY });
 }
 
