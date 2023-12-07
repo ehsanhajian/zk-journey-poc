@@ -30,7 +30,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!endpoint) throw new Error("No API endpoint provided in the ENV!");
   const apiUrl = `${endpoint}/api/floors/${params.floor}`;
   const rawResponse = await fetch(apiUrl, {
-    headers: { Authorization: `bearer ${process.env.STRAPI_TOKEN}` },
+    headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
   });
   const response = (await rawResponse.json()) as floorData;
   return json({ apiBase: endpoint, apiData: response });
