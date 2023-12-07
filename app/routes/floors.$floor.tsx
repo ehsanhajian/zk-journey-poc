@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
   });
   const response = (await rawResponse.json()) as floorData;
-  return json({ apiBase: endpoint, apiData: response });
+  return json({ apiData: response });
 };
 
 export default function Floor() {
@@ -41,7 +41,7 @@ export default function Floor() {
   const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const { apiData, apiBase } = useLoaderData<LoaderFunction>();
+  const { apiData } = useLoaderData<LoaderFunction>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -159,7 +159,7 @@ export default function Floor() {
           ref={backgroundRef}
           className="absolute top-0 left-0 w-full min-h-screen z--10"
           style={{
-            backgroundImage: `url(${apiBase}${apiData.backgroundImage.url})`,
+            backgroundImage: `url(${apiData.backgroundImage.url})`,
             backgroundSize: "auto 100%",
             backgroundRepeat: "repeat-x",
             backgroundPositionX: "0",
@@ -193,7 +193,7 @@ export default function Floor() {
             {apiData.gachaMachines.map((machine: GachaMachine) => (
               <div className="flex mr-[20%] items-center" key={machine.id}>
                 <img
-                  src={`${apiBase}${machine.image.url}`}
+                  src={`${machine.image.url}`}
                   alt={`Gacha machine ${machine.machineName}`}
                   className="w-64 h-auto cursor-pointer"
                   onClick={() => handleImageClick(machine.id)}
