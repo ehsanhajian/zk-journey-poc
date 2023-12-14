@@ -1,20 +1,47 @@
-import React, { useEffect, useRef, useState } from "react";
-import background from "../images/level1.png";
-import gacha from "../images/gacha1.png";
+import { useEffect, useRef, useState } from "react";
 import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../components/Icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import {QuestWidget} from "@bandit-network/quest-widget"
-import {useConnectModal} from "@rainbow-me/rainbowkit";
-import BanditQuest from "~/components/BanditQuest";
-import {useLoaderData} from "@remix-run/react";
-import {LoaderFunction} from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { LoaderFunction, json } from "@remix-run/node";
 
+type ImageData = {
+  url: string;
+  name: string;
+};
 
-export default function Countryside() {
+type GachaMachine = {
+  id: number;
+  machineName: string;
+  partnerName: string;
+  partnerDescription: string;
+  image: ImageData;
+};
+
+type floorData = {
+  id: number;
+  floorName: string;
+  floorDescription: string;
+  backgroundImage: ImageData;
+  gachaMachines: GachaMachine[];
+};
+
+export const loader: LoaderFunction = async ({ params }) => {
+  const endpoint = process.env.STRAPI_BASE_URL;
+  if (!endpoint) throw new Error("No API endpoint provided in the ENV!");
+  const apiUrl = `${endpoint}/api/floors/${params.floor}`;
+  const rawResponse = await fetch(apiUrl, {
+    headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
+  });
+  const response = (await rawResponse.json()) as floorData;
+  return json({ apiData: response });
+};
+
+export default function Floor() {
   const [visibleDiv, setVisibleDiv] = useState<number | null>(null);
   const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
+  const { apiData } = useLoaderData<LoaderFunction>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -124,21 +151,23 @@ export default function Countryside() {
   }, [handleWheel, handleKeyUp, updateScrollProgress]);
 
   return (
-    <div className="relative h-[750px] overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Parallax Background */}
-      <div
-        id="background"
-        ref={backgroundRef}
-        className="absolute top-0 left-0 w-full h-[800px] z--10"
-        style={{
-          backgroundImage: `url(${background})`,
-          backgroundSize: "auto 100%",
-          backgroundRepeat: "repeat-x",
-          backgroundPositionX: "0",
-        }}
-      />
+      {
+        <div
+          id="background"
+          ref={backgroundRef}
+          className="absolute top-0 left-0 w-full min-h-screen z--10"
+          style={{
+            backgroundImage: `url(${apiData.backgroundImage.url})`,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat-x",
+            backgroundPositionX: "0",
+          }}
+        />
+      }
 
-      <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] h-full relative z-0">
+      <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] min-h-screen relative z-0">
         {/* Top Button */}
         <div className="row-start-1 col-start-2 justify-self-end p-4">
           <ConnectButton />
@@ -161,26 +190,27 @@ export default function Countryside() {
             className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[30%] z-10"
             ref={scrollContainerRef}
           >
-            {[...Array(5).keys()].map((index) => (
-              <div className="flex-none items-center flex mr-[20%]" key={index}>
+            {apiData.gachaMachines.map((machine: GachaMachine) => (
+              <div className="flex mr-[20%] items-center" key={machine.id}>
                 <img
-                  src={gacha}
-                  alt={`Gacha machine ${index}`}
+                  src={`${machine.image.url}`}
+                  alt={`Gacha machine ${machine.machineName}`}
                   className="w-64 h-auto cursor-pointer"
-                  onClick={() => handleImageClick(3444)}
+                  onClick={() => handleImageClick(machine.id)}
                 />
                 <div
-                  id={`image_details_${index}`}
-                  className="transition-all overflow-hidden bg-gray-200 rounded-lg"
+                  id={`image_details_${machine.id}`}
+                  className="transition-all overflow-hidden bg-gray-200 rounded-lg self-stretch"
                   style={{
-                    width: visibleDiv ? "500px" : "0",
+                    width: visibleDiv === machine.id ? "500px" : "0",
+                    opacity: 0.7,
                     transition: "width 0.3s ease",
                   }}
                 >
                   {/* BANDIT WIDGET HERE */}
-                  {
-                      visibleDiv && <BanditQuest isOpen={!!visibleDiv} collectionId={visibleDiv} onClose={() => setVisibleDiv(null)}/>
-                  }
+                  <p className="p-4 whitespace-nowrap">Machine name: {machine.machineName}</p>
+                  <p className="p-4 whitespace-nowrap">Partner name: {machine.partnerName}</p>
+                  <p className="p-4">Partner description: {machine.partnerDescription}</p>
                 </div>
               </div>
             ))}
