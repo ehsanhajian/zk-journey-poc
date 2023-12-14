@@ -1,19 +1,10 @@
-import { json, type LinksFunction, LoaderFunction } from "@remix-run/node";
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useLoaderData,
-} from "@remix-run/react";
+import { type LinksFunction } from "@remix-run/node";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 
 import styles from "./tailwind.css";
 // import questStyles from "@bandit-network/quest-widget/dist/styles.css"
 import rainbowStyles from "@rainbow-me/rainbowkit/styles.css";
-import ThirdwebProviders from "~/providers/ThirdwebProviders";
-import RainbowProviders from "~/providers/RainbowProviders";
+import RainbowProviders from "~/providers/RainbowProvider";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -24,12 +15,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: rainbowStyles },
 ];
 
-export async function loader() {
-  return json({ twApiKey: process.env.TW_API_KEY });
-}
-
 export default function App() {
-  const { twApiKey } = useLoaderData<LoaderFunction>();
   return (
     <html lang="en">
       <head>
@@ -41,9 +27,7 @@ export default function App() {
       </head>
       <body>
         <RainbowProviders>
-          <ThirdwebProviders twApiKey={twApiKey}>
-            <Outlet />
-          </ThirdwebProviders>
+          <Outlet />
         </RainbowProviders>
         <ScrollRestoration />
         <Scripts />
