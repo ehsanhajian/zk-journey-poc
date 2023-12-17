@@ -4,7 +4,8 @@ import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@re
 import styles from "./tailwind.css";
 // import questStyles from "@bandit-network/quest-widget/dist/styles.css"
 import rainbowStyles from "@rainbow-me/rainbowkit/styles.css";
-import RainbowProviders from "~/providers/RainbowProvider";
+import RainbowProvider from "~/providers/RainbowProvider";
+import BanditProvider from "./providers/BanditProvider";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -26,9 +27,12 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <RainbowProviders>
-          <Outlet />
-        </RainbowProviders>
+        <RainbowProvider>
+          <BanditProvider>
+            <Outlet />
+          </BanditProvider>
+        </RainbowProvider>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

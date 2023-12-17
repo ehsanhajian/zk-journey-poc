@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  darkTheme,
-  getDefaultWallets,
-  RainbowKitProvider,
-  createAuthenticationAdapter,
-} from "@rainbow-me/rainbowkit";
+import { darkTheme, getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { polygonMumbai, astarZkatana } from "wagmi/chains";
@@ -22,20 +17,7 @@ const wagmiConfig = createConfig({
   connectors,
   publicClient,
 });
-
-const authenticationAdapter = createAuthenticationAdapter({
-  getNonce: async () => {
-    const response = await fetch("/api/auth/getNonce");
-    const data = await response.json();
-    return data.nonce;
-  },
-  createMessage: async () => {},
-  getMessageBody: async () => {},
-  verify: async () => {},
-  signOut: async () => {},
-});
-
-const RainbowProvider = ({ children }: { children: React.ReactNode }) => {
+const RainbowProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider
@@ -50,4 +32,4 @@ const RainbowProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default RainbowProvider;
+export default RainbowProviders;
