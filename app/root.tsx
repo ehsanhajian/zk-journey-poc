@@ -6,6 +6,7 @@ import styles from "./tailwind.css";
 import rainbowStyles from "@rainbow-me/rainbowkit/styles.css";
 import RainbowProvider from "~/providers/RainbowProvider";
 import BanditProvider from "./providers/BanditProvider";
+import { BanditSignModal } from "./components/BanditSignModal";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -29,6 +30,7 @@ export default function App() {
       <body>
         <RainbowProvider>
           <BanditProvider>
+            <BanditSignModal />
             <Outlet />
           </BanditProvider>
         </RainbowProvider>
