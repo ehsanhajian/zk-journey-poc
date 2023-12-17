@@ -30,10 +30,13 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!endpoint) throw new Error("No API endpoint provided in the ENV!");
   const apiUrl = `${endpoint}/api/floors/${params.floor}`;
   const rawResponse = await fetch(apiUrl, {
-    headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
+    // headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
   });
   const response = (await rawResponse.json()) as floorData;
-  return json({ apiData: response });
+  return json({
+    apiData: response,
+    imageUrlPrefix: process.env.STRAPI_HOSTED_IMAGES ? endpoint : null,
+  });
 };
 
 export default function Floor() {
@@ -41,7 +44,7 @@ export default function Floor() {
   const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const { apiData } = useLoaderData<LoaderFunction>();
+  const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +56,6 @@ export default function Floor() {
       setScrollProgress(progress);
     }
   };
-
   const handleKeyUp = (event: KeyboardEvent) => {
     if (event.key === "ArrowRight") {
       handleButtonScroll("right");
@@ -149,7 +151,7 @@ export default function Floor() {
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, [handleWheel, handleKeyUp, updateScrollProgress]);
-
+  console.log(apiData, `url(${imageUrlPrefix ?? ""}${apiData.backgroundImage.url})`);
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Parallax Background */}
@@ -159,7 +161,7 @@ export default function Floor() {
           ref={backgroundRef}
           className="absolute top-0 left-0 w-full min-h-screen z--10"
           style={{
-            backgroundImage: `url(${apiData.backgroundImage.url})`,
+            backgroundImage: `url(${imageUrlPrefix ?? ""}${apiData.backgroundImage.url})`,
             backgroundSize: "auto 100%",
             backgroundRepeat: "repeat-x",
             backgroundPositionX: "0",
@@ -193,7 +195,7 @@ export default function Floor() {
             {apiData.gachaMachines.map((machine: GachaMachine) => (
               <div className="flex mr-[20%] items-center" key={machine.id}>
                 <img
-                  src={`${machine.image.url}`}
+                  src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
                   alt={`Gacha machine ${machine.machineName}`}
                   className="w-64 h-auto cursor-pointer"
                   onClick={() => handleImageClick(machine.id)}
