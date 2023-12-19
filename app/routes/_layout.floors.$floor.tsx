@@ -166,20 +166,6 @@ export default function Floor() {
 
       <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] min-h-screen relative z-0">
         {/* Top Button */}
-        <div className="row-start-1 col-start-2 justify-self-end p-4">
-          <ConnectButton />
-        </div>
-
-        {/* Left Column with Icons */}
-        <div className="flex flex-col justify-start space-y-5 items-center row-start-2 col-start-1 p-4 bg-opacity-50 z-50">
-          <BridgeIcon />
-          <CardIcon />
-          <FolderIcon />
-          <PoolIcon />
-          <div className="justify-self-end">
-            <LanguageIcon />
-          </div>
-        </div>
 
         {/* Content Area */}
         <div className="row-start-2 col-start-1 overflow-auto col-span-2">
