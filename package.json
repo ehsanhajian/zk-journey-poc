@@ -12,7 +12,7 @@
     "redirects:disable": "shx rm -f public/_redirects"
   },
   "dependencies": {
-    "@bandit-network/quest-widget": "^0.0.1-alpha.9",
+    "@bandit-network/quest-widget": "^0.0.0-rc.5",
     "@netlify/functions": "^2.4.0",
     "@netlify/remix-adapter": "^2.2.0",
     "@rainbow-me/rainbowkit": "^1.3.0",
@@ -26,6 +26,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "shx": "^0.3.4",
+    "uuid": "^9.0.1",
     "viem": "^1.19.9",
     "wagmi": "^1.4.7"
   },
@@ -35,6 +36,7 @@
     "@remix-run/serve": "^2.2.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "@types/uuid": "^9.0.7",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.1.6"
   },

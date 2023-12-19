@@ -3,6 +3,7 @@ import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../com
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction, json } from "@remix-run/node";
+import BanditQuest from "~/components/BanditQuest";
 
 type ImageData = {
   url: string;
@@ -15,6 +16,7 @@ type GachaMachine = {
   partnerName: string;
   partnerDescription: string;
   image: ImageData;
+  banditCollectionId: number;
 };
 
 type floorData = {
@@ -30,10 +32,13 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!endpoint) throw new Error("No API endpoint provided in the ENV!");
   const apiUrl = `${endpoint}/api/floors/${params.floor}`;
   const rawResponse = await fetch(apiUrl, {
-    headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
+    // headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
   });
   const response = (await rawResponse.json()) as floorData;
-  return json({ apiData: response });
+  return json({
+    apiData: response,
+    imageUrlPrefix: process.env.STRAPI_HOSTED_IMAGES ? endpoint : null,
+  });
 };
 
 export default function Floor() {
@@ -41,7 +46,7 @@ export default function Floor() {
   const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const { apiData } = useLoaderData<LoaderFunction>();
+  const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +58,6 @@ export default function Floor() {
       setScrollProgress(progress);
     }
   };
-
   const handleKeyUp = (event: KeyboardEvent) => {
     if (event.key === "ArrowRight") {
       handleButtonScroll("right");
@@ -159,7 +163,7 @@ export default function Floor() {
           ref={backgroundRef}
           className="absolute top-0 left-0 w-full min-h-screen z--10"
           style={{
-            backgroundImage: `url(${apiData.backgroundImage.url})`,
+            backgroundImage: `url(${imageUrlPrefix ?? ""}${apiData.backgroundImage.url})`,
             backgroundSize: "auto 100%",
             backgroundRepeat: "repeat-x",
             backgroundPositionX: "0",
@@ -193,7 +197,7 @@ export default function Floor() {
             {apiData.gachaMachines.map((machine: GachaMachine) => (
               <div className="flex mr-[20%] items-center" key={machine.id}>
                 <img
-                  src={`${machine.image.url}`}
+                  src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
                   alt={`Gacha machine ${machine.machineName}`}
                   className="w-64 h-auto cursor-pointer"
                   onClick={() => handleImageClick(machine.id)}
@@ -203,14 +207,18 @@ export default function Floor() {
                   className="transition-all overflow-hidden bg-gray-200 rounded-lg self-stretch"
                   style={{
                     width: visibleDiv === machine.id ? "500px" : "0",
-                    opacity: 0.7,
+                    opacity: 0.9,
                     transition: "width 0.3s ease",
                   }}
                 >
-                  {/* BANDIT WIDGET HERE */}
                   <p className="p-4 whitespace-nowrap">Machine name: {machine.machineName}</p>
                   <p className="p-4 whitespace-nowrap">Partner name: {machine.partnerName}</p>
                   <p className="p-4">Partner description: {machine.partnerDescription}</p>
+                  <BanditQuest
+                    isOpen={!!visibleDiv}
+                    collectionId={machine.banditCollectionId || 3468}
+                    onClose={() => console.log("AAAAA: closed")}
+                  />
                 </div>
               </div>
             ))}
