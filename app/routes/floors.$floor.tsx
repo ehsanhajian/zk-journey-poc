@@ -4,6 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction, json } from "@remix-run/node";
 import BanditQuest from "~/components/BanditQuest";
+import { strapiLoader } from "~/helpers/strapiLoader";
 
 type ImageData = {
   url: string;
@@ -28,17 +29,9 @@ type floorData = {
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const endpoint = process.env.STRAPI_BASE_URL;
-  if (!endpoint) throw new Error("No API endpoint provided in the ENV!");
-  const apiUrl = `${endpoint}/api/floors/${params.floor}`;
-  const rawResponse = await fetch(apiUrl, {
-    // headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
-  });
-  const response = (await rawResponse.json()) as floorData;
-  return json({
-    apiData: response,
-    imageUrlPrefix: process.env.STRAPI_HOSTED_IMAGES ? endpoint : null,
-  });
+  const response = await strapiLoader<floorData>(`/floors/${params.floor}`);
+  console.log("AAAA", response);
+  return json(response);
 };
 
 export default function Floor() {

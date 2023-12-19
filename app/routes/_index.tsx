@@ -1,22 +1,49 @@
-import type { MetaFunction } from "@remix-run/node";
+import { type MetaFunction, type LoaderFunction, json } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
+import { strapiLoader } from "~/helpers/strapiLoader";
+import { stringify } from "qs";
 
 export const meta: MetaFunction = () => {
   return [{ name: "description", content: "Welcome to the Gacha Party!" }];
 };
 
-import banner from "../images/title.png";
-import details from "../images/details.png";
-import { Link } from "@remix-run/react";
+export const loader: LoaderFunction = async () => {
+  const query = stringify({
+    populate: {
+      background: {
+        fields: ["url", "name", "formats"],
+      },
+      logo: {
+        fields: ["url", "name", "formats"],
+      },
+    },
+  });
+  const apiData = await strapiLoader("/landing-page", query);
+  return json(apiData);
+};
 
 export default function Index() {
+  const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
+
+  const backgroundImage = apiData.data.attributes.background.data.attributes.url;
+  const logoImage = apiData.data.attributes.logo.data.attributes.url;
+  const fullImageUrl = `${imageUrlPrefix}${backgroundImage}`;
+  const fullLogoUrl = `${imageUrlPrefix}${logoImage}`;
+
   return (
-    <div className="flex-col space-y-12 container mx-auto p-6">
-      <img src={banner} alt="" className="mx-auto" />
+    <div
+      className="bg-cover bg-center h-screen w-full flex items-center justify-center flex-col"
+      style={{ backgroundImage: `url(${fullImageUrl})` }}
+    >
       <div>
-        <Link to="/floors/countryside">
-          <img src={details} alt="" className="mx-auto" />
-        </Link>
+        <img src={fullLogoUrl} alt="Logo" />
       </div>
+      <Link
+        to="/floors/town"
+        className="bg-blue-700 bg-opacity-100 text-white text-4xl font-bold uppercase px-28 py-4 rounded-md mt-12 hover:bg-blue-500 transition-colors duration-300"
+      >
+        Enter
+      </Link>
     </div>
   );
 }
