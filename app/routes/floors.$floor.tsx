@@ -3,6 +3,7 @@ import { BridgeIcon, CardIcon, FolderIcon, PoolIcon, LanguageIcon } from "../com
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction, json } from "@remix-run/node";
+import BanditQuest from "~/components/BanditQuest";
 
 type ImageData = {
   url: string;
@@ -15,6 +16,7 @@ type GachaMachine = {
   partnerName: string;
   partnerDescription: string;
   image: ImageData;
+  banditCollectionId: number;
 };
 
 type floorData = {
@@ -205,14 +207,18 @@ export default function Floor() {
                   className="transition-all overflow-hidden bg-gray-200 rounded-lg self-stretch"
                   style={{
                     width: visibleDiv === machine.id ? "500px" : "0",
-                    opacity: 0.7,
+                    opacity: 0.9,
                     transition: "width 0.3s ease",
                   }}
                 >
-                  {/* BANDIT WIDGET HERE */}
                   <p className="p-4 whitespace-nowrap">Machine name: {machine.machineName}</p>
                   <p className="p-4 whitespace-nowrap">Partner name: {machine.partnerName}</p>
                   <p className="p-4">Partner description: {machine.partnerDescription}</p>
+                  <BanditQuest
+                    isOpen={!!visibleDiv}
+                    collectionId={machine.banditCollectionId || 3468}
+                    onClose={() => setVisibleDiv(null)}
+                  />
                 </div>
               </div>
             ))}

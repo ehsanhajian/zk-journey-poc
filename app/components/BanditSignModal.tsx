@@ -11,6 +11,18 @@ export function BanditSignModal() {
   const { signMessageAsync, isLoading } = useSignMessage();
 
   const previousAddress = useRef<`0x${string}`>();
+  const previousSignature = useRef<string>();
+
+  useEffect(() => {
+    const storedAddress = localStorage.getItem("currentAddress");
+    if (storedAddress) {
+      previousAddress.current = storedAddress as `0x${string}`;
+    }
+    const storedSignature = localStorage.getItem("currentSignature");
+    if (storedSignature) {
+      previousSignature.current = storedSignature;
+    }
+  }, []);
 
   const fetchSignatureMessage = async () => {
     const { message } = await getSignatureMessage(address as string);
@@ -22,7 +34,24 @@ export function BanditSignModal() {
       message,
     });
     walletSettings?.setSignature(res);
+    setCurrentSignature(res);
     setIsOpen(false);
+  };
+
+  const setCurrentAddress = () => {
+    previousAddress.current = address;
+    localStorage.setItem("currentAddress", address as string);
+  };
+
+  const setCurrentSignature = (signature: string) => {
+    previousSignature.current = signature;
+    localStorage.setItem("currentSignature", signature);
+  };
+
+  const openSignModal = () => {
+    setCurrentAddress();
+    setCurrentSignature("");
+    setIsOpen(true);
   };
 
   useEffect(() => {
@@ -33,36 +62,13 @@ export function BanditSignModal() {
     if (!address) setIsOpen(false);
 
     if (address && address !== previousAddress.current) {
-      previousAddress.current = address;
-      setIsOpen(true);
+      openSignModal();
+    } else {
+      walletSettings?.setSignature(previousSignature.current as string);
+      console.log("setting signature", previousSignature.current);
     }
-  }, [address]);
+  }, [address, openSignModal, walletSettings]);
 
-  // return (
-  //   isOpen && (
-  //     <dialog>
-  //       <div>
-  //         <h3 className="font-bold text-lg">Hello!</h3>
-  //         <p className="py-4">
-  //           Thank you for connecting your wallet, please sign this message to begin your OMA hunt!
-  //         </p>
-  //         <p>
-  //           This step is necessary to prove you own the address supplied, and to allow you to
-  //           activate the Gacha Machines
-  //         </p>
-
-  //         <button
-  //           disabled={isLoading}
-  //           onClick={onClickSign}
-  //           type="button"
-  //           className="btn btn-primary"
-  //         >
-  //           Sign Message
-  //         </button>
-  //       </div>
-  //     </dialog>
-  //   )
-  // );
   return (
     isOpen && (
       <div
