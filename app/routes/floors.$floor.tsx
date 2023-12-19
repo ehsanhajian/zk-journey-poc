@@ -153,7 +153,7 @@ export default function Floor() {
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, [handleWheel, handleKeyUp, updateScrollProgress]);
-  console.log(apiData, `url(${imageUrlPrefix ?? ""}${apiData.backgroundImage.url})`);
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Parallax Background */}
@@ -217,7 +217,7 @@ export default function Floor() {
                   <BanditQuest
                     isOpen={!!visibleDiv}
                     collectionId={machine.banditCollectionId || 3468}
-                    onClose={() => setVisibleDiv(null)}
+                    onClose={() => console.log("AAAAA: closed")}
                   />
                 </div>
               </div>
