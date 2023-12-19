@@ -30,7 +30,6 @@ type floorData = {
 
 export const loader: LoaderFunction = async ({ params }) => {
   const response = await strapiLoader<floorData>(`/floors/${params.floor}`);
-  console.log("AAAA", response);
   return json(response);
 };
 
@@ -165,9 +164,8 @@ export default function Floor() {
       }
 
       <div className="grid grid-rows-[auto,1fr] grid-cols-[auto,1fr] min-h-screen relative z-0">
-        {/* Top Button */}
+        <div className="absolute top-1/2 inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(0,56,94,0.7)] to-transparent z--10 pointer-events-none" />
 
-        {/* Content Area */}
         <div className="row-start-2 col-start-1 overflow-auto col-span-2">
           <div
             className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[30%] z-10"
@@ -175,12 +173,14 @@ export default function Floor() {
           >
             {apiData.gachaMachines.map((machine: GachaMachine) => (
               <div className="flex mr-[20%] items-center" key={machine.id}>
-                <img
-                  src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
-                  alt={`Gacha machine ${machine.machineName}`}
-                  className="w-64 h-auto cursor-pointer"
-                  onClick={() => handleImageClick(machine.id)}
-                />
+                <div className="min-w-[450px] h-[45vh] relative">
+                  <img
+                    src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
+                    alt={`Gacha machine ${machine.machineName}`}
+                    className="absolute inset-0 w-full min-h-fit h-full object-cover cursor-pointer"
+                    onClick={() => handleImageClick(machine.id)}
+                  />
+                </div>
                 <div
                   id={`image_details_${machine.id}`}
                   className="transition-all overflow-hidden bg-gray-200 rounded-lg self-stretch"
