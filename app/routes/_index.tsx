@@ -25,8 +25,8 @@ export const loader: LoaderFunction = async () => {
 export default function Index() {
   const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
 
-  const backgroundImage = apiData.data.attributes.background.data.attributes.url;
-  const logoImage = apiData.data.attributes.logo.data.attributes.url;
+  const backgroundImage = apiData.data.background.url;
+  const logoImage = apiData.data.logo.url;
   const fullImageUrl = `${imageUrlPrefix}${backgroundImage}`;
   const fullLogoUrl = `${imageUrlPrefix}${logoImage}`;
 

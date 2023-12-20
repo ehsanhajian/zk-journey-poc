@@ -65,7 +65,6 @@ export function BanditSignModal() {
       openSignModal();
     } else {
       walletSettings?.setSignature(previousSignature.current as string);
-      console.log("setting signature", previousSignature.current);
     }
   }, [address, openSignModal, walletSettings]);
 

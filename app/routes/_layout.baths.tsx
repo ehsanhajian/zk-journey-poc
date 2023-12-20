@@ -8,7 +8,7 @@ export const loader: LoaderFunction = async () => {
   const query = stringify({
     populate: {
       background_image: {
-        fields: ["url", "name", "formats"],
+        fields: ["url", "name"],
       },
     },
   });
@@ -19,7 +19,7 @@ export const loader: LoaderFunction = async () => {
 export default function Evolve() {
   const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
 
-  const backgroundImage = apiData.data.attributes.background_image.data.attributes.url;
+  const backgroundImage = apiData.data.background_image.url;
   const fullImageUrl = `${imageUrlPrefix}${backgroundImage}`;
 
   return (
