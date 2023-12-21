@@ -15,19 +15,18 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Setting up SSH keys
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Execute Deployment Commands
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.DO_USERNAME }}@${{ secrets.DO_HOST }} << 'EOF'
-          cd /gacha/zk-journey-poc
-          git stash
-          git pull
-          npm run build
-          sudo systemctl restart zk-journey.service
-        EOF
+    - name: SSH into DO instance
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          key: ${{ secrets.SSH__KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /gacha/zk-journey-poc
+            git stash
+            git pull
+            npm ci
+            npm run build
+            sudo systemctl restart zk-journey.service
