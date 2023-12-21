@@ -1,0 +1,30 @@
+name: Deploy to DigitalOcean Node
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setting up SSH keys
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Execute Deployment Commands
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.DO_USERNAME }}@${{ secrets.DO_HOST }} << 'EOF'
+          cd /gacha/zk-journey-poc
+          git stash
+          git pull
+          npm run build
+          sudo systemctl restart zk-journey.service
+        EOF
